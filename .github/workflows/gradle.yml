@@ -1,0 +1,92 @@
+name: Java CI
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  build:
+    name: Build for JDK 21
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'NovaFox161/B4Tea4T' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'adopt'
+
+      - name: Validate gradle
+        uses: gradle/wrapper-validation-action@v2
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      # Build project and have jib push images to private container registry
+      - name: Build with Gradle
+        run: ./gradlew build
+  publish-artifacts:
+    name: Publish Artifacts
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'master') }}
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'adopt'
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      - name: Publish to CR with Gradle
+        uses: Wandalen/wretry.action@master
+        env:
+          SCW_USER: ${{ secrets.SCW_USER }}
+          SCW_SECRET: ${{ secrets.SCW_SECRET }}
+        with:
+          command: ./gradlew jib -Djib.to.auth.username=${SCW_USER} -Djib.to.auth.password=${SCW_SECRET}
+          attempt_limit: 6
+          # 1 minute in ms
+          attempt_delay: 60000
+  #deploy-dev:
+  #  name: Deploy dev
+  #  runs-on: ubuntu-latest
+  #  if: github.ref_name == 'develop'
+  #  needs: publish-artifacts
+  #  steps:
+  #    - uses: actions/checkout@v4
+  #      with:
+  #        fetch-depth: 0
+  #
+  #    # Have K8S pull latest images for dev pods
+  #    - name: Trigger dev deploy
+  #      uses: davi020/kubernetes-action@master
+  #      env:
+  #        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+  #      with:
+  #        args: delete -n personal pods -l env=dev,app=b4tea4t

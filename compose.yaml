@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=b4tea4t'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=b4tea4t'
+    ports:
+      - '5432'
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '6379'
+
+  bot:
+    image: rg.nl-ams.scw.cloud/dreamexposure/b4tea4t:latest
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    ports:
+      - "5005:5005"
+    volumes:
+      - ./.docker:/bot
+    working_dir: /bot
+    depends_on:
+      - redis

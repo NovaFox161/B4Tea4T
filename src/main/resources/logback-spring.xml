@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <!-- Properties -->
+    <property name="LOG_DIR" value="logs"/>
+    <property name="ERROR_LOG_FILE" value="exceptions"/>
+    <property name="DEBUG_LOG_FILE" value="debug"/>
+
+    <!-- Logs we care about -->
+    <logger name="pet.pupgrammer.b4tea4t" level="DEBUG"/>
+    <logger name="org.springframework.web" level="INFO"/>
+    <logger name="org.springframework.http.codec" level="INFO"/>
+    <logger name="org.springframework.core.codec" level="INFO"/>
+    <logger name="org.springframework.boot.actuate" level="INFO"/>
+    <logger name="io.netty" level="INFO"/>
+    <logger name="reactor" level="INFO"/>
+    <logger name="proxy" level="INFO"/>
+    <logger name="reactor.retry" level="DEBUG"/>
+    <logger name="discord4j.core" level="DEBUG"/>
+    <logger name="discord4j.gateway" level="INFO"/>
+    <logger name="discord4j.gateway.client" level="INFO"/>
+    <logger name="io.asyncer.r2dbc.mysql" level="INFO"/>
+    <logger name="io.r2dbc.pool" level="WARN"/>
+    <logger name="io.lettuce" level="INFO"/>
+
+    <!-- Filters -->
+    <turboFilter class="pet.pupgrammer.b4tea4t.logger.GatewayEventFilter">
+        <Exclude>PRESENCE_UPDATE,GUILD_CREATE,GUILD_MEMBERS_CHUNK</Exclude>
+    </turboFilter>
+
+    <!-- Appenders -->
+    <appender name="CONSOLE_HUMAN_READABLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <!-- TODO: I am considering looking into getting additional info passed into these logs (like traces and shit) but I think I need to learn tempo first-->
+            <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
+                <timestampFormat>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampFormat>
+
+                <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+                    <prettyPrint>false</prettyPrint>
+                </jsonFormatter>
+                <appendLineSeparator>true</appendLineSeparator>
+            </layout>
+        </encoder>
+    </appender>
+
+    <appender name="DISCORD_WEBHOOK" class="pet.pupgrammer.b4tea4t.logger.DiscordWebhookAppender"/>
+
+    <appender name="FILE_ERROR_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_DIR}/${ERROR_LOG_FILE}.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+
+            <!-- keep 30 days' worth of history capped at 2GB total size -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Assigning default appenders -->
+    <springProfile name="local">
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE_HUMAN_READABLE"/>
+            <appender-ref ref="FILE_ERROR_LOG"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="!local">
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE_JSON"/>
+            <appender-ref ref="DISCORD_WEBHOOK"/>
+        </root>
+    </springProfile>
+
+    <root level="DEBUG">
+        <appender-ref ref="DISCORD_WEBHOOK"/>
+    </root>
+</configuration>
