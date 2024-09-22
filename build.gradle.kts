@@ -81,9 +81,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
-
     // Observability
     implementation("ch.qos.logback.contrib:logback-json-classic:$logbackContribVersion")
     implementation("ch.qos.logback.contrib:logback-jackson:$logbackContribVersion")
