@@ -40,7 +40,7 @@ jobs:
   publish-artifacts:
     name: Publish Artifacts
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'master') }}
+    if: ${{ github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'main') }}
     needs: build
     steps:
       - uses: actions/checkout@v4
