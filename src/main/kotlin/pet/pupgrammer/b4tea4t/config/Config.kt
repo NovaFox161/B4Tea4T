@@ -15,6 +15,7 @@ enum class Config(private val key: String, private var value: Any? = null) {
     CACHE_USE_REDIS("bot.cache.redis", false),
     CACHE_PREFIX("bot.cache.prefix", "b4tea4t"),
     //CACHE_TTL_SETTINGS_MINUTES("bot.cache.ttl-minutes.settings", 60),
+    CACHE_TTL_WELCOME_MESSAGE("bot.cache.ttl-minutes.welcome-message", 120),
 
     // Global bot timings
 
