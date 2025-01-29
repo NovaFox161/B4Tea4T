@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono
 class WelcomeMessageService(
     private val repository: WelcomeMessageRepository,
     private val cache: WelcomeMessageCache,
+    private val metricService: MetricService,
 ) {
 
     //////////////////////
@@ -120,5 +121,7 @@ class WelcomeMessageService(
                 .allowUser(member.id)
                 .build()
             ).awaitSingleOrNull()
+
+        metricService.incrementWelcomeMessagesPosted()
     }
 }

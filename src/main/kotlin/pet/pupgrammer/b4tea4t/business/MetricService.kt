@@ -22,4 +22,8 @@ class MetricService(
             tags.plus(Tag.of("task", task))
         ).record(Duration.ofMillis(duration))
     }
+
+    fun incrementWelcomeMessagesPosted() {
+        meterRegistry.counter("bot.b4tea4t.welcome_message.posted").increment()
+    }
 }
