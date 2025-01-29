@@ -4,7 +4,7 @@ import discord4j.common.util.Snowflake
 import pet.pupgrammer.b4tea4t.database.WelcomeMessageData
 import pet.pupgrammer.b4tea4t.extensions.toSnowflake
 
-class WelcomeMessage(
+data class WelcomeMessage(
     val guildId: Snowflake,
     val enabled: Boolean,
     val channelId: Snowflake,

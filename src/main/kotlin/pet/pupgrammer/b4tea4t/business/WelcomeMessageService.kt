@@ -89,6 +89,7 @@ class WelcomeMessageService(
     suspend fun postWelcomeMessage(guildId: Snowflake, member: Member) {
         val message = getWelcomeMessage(guildId) ?: return
         if (!message.enabled) return
+        if (message.messageContent.isNullOrBlank() && message.embedDescription.isNullOrBlank()) return
 
         val guild = member.guild.awaitSingle()
         val channel = guild.getChannelById(message.channelId)

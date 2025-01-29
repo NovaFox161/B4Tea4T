@@ -1,0 +1,72 @@
+{
+  "name": "config",
+  "description": "A set of commands for managing and modifying various configuration aspects of the bot",
+  "dm_permission": false,
+  "default_member_permissions": "32",
+  "options": [
+    {
+      "name": "welcome-message",
+      "description": "A set of commands for managing the welcome message",
+      "type": 2,
+      "options": [
+        {
+          "name": "create",
+          "description": "Allows creating of a new welcome message if one does not yet exist",
+          "type": 1,
+          "options": [
+            {
+              "name": "channel",
+              "type": 7,
+              "description": "The channel to post welcome message in",
+              "required": true,
+              "channel_types": [0, 2, 5]
+            },
+            {
+              "name": "enabled",
+              "description": "Whether or not the welcome message is enabled",
+              "type": 5,
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "edit",
+          "description": "Allows editing of the welcome message content",
+          "type": 1
+        },
+        {
+          "name": "enable",
+          "description": "Allows enabling or disabling of the welcome message",
+          "type": 1,
+          "options": [
+            {
+              "name": "enabled",
+              "description": "Whether or not the welcome message is enabled",
+              "type": 5,
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "channel",
+          "description": "Allows setting the channel the welcome message will be posted to",
+          "type": 1,
+          "options": [
+            {
+              "name": "channel",
+              "type": 7,
+              "description": "The channel to post welcome message in",
+              "required": true,
+              "channel_types": [0, 2, 5]
+            }
+          ]
+        },
+        {
+          "name": "delete",
+          "description": "Allows deleting the welcome message",
+          "type": 1
+        }
+      ]
+    }
+  ]
+}
