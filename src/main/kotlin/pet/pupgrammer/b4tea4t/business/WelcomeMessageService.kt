@@ -53,7 +53,7 @@ class WelcomeMessageService(
 
         message = repository.findByGuildId(guildId.asLong())
             .map(::WelcomeMessage)
-            .awaitSingle()
+            .awaitSingleOrNull()
         if (message != null) cache.put(key = guildId, value = message)
 
         return message
