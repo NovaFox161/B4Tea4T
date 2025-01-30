@@ -18,9 +18,17 @@ class ConfigCommand(
     override val hasSubcommands = true
     override val ephemeral = true
 
-    private val doNotDeferOnSubcommands = setOf("welcome-message")
-
-    override suspend fun shouldDefer(event: ChatInputInteractionEvent) = !doNotDeferOnSubcommands.contains(event.options[0].name)
+    override suspend fun shouldDefer(event: ChatInputInteractionEvent): Boolean {
+        return when (event.options[0].name) {
+            "welcome-message" -> {
+                when (event.options[0].options[0].name) {
+                    "create", "edit" -> false
+                    else -> true
+                }
+            }
+            else -> true
+        }
+    }
 
     override suspend fun handle(event: ChatInputInteractionEvent) {
         when (event.options[0].name) {
@@ -69,7 +77,7 @@ class ConfigCommand(
         val existingWelcomeMessage = welcomeMessageService.getWelcomeMessage(event.interaction.guildId.get())
 
         if (existingWelcomeMessage == null) {
-            event.createFollowup("Please create a welcome message first with `/config welcome-message create`")
+            event.reply("Please create a welcome message first with `/config welcome-message create`")
                 .withEphemeral(ephemeral)
                 .awaitSingleOrNull()
             return
