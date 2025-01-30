@@ -41,5 +41,7 @@ class EditWelcomeMessageModal(
         welcomeMessageService.upsertWelcomeMessage(modifiedWelcomeMessage)
 
         event.createFollowup("Successfully set welcome message content")
+            .withEphemeral(ephemeral)
+            .awaitSingleOrNull()
     }
 }
