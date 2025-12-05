@@ -53,9 +53,7 @@ class ConfigCommand(
             .map(ApplicationCommandInteractionOptionValue::asString)
             .get()
 
-        event.client.getSelfMember(event.interaction.guildId.get()).flatMap {
-            it.edit().withNicknameOrNull(newName)
-        }.awaitSingleOrNull()
+        event.interaction.guild.map { it.changeSelfNickname(newName) }.awaitSingleOrNull()
 
         event.createFollowup("Success")
             .withEphemeral(ephemeral)
