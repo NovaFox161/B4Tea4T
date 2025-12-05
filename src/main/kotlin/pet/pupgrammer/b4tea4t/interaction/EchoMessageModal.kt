@@ -45,7 +45,7 @@ class EchoMessageModal(
 
         // Send
         val message = echoService.sendMessage(channel, messageContent, messageReference)
-        event.createFollowup("<https://discord.com/${guildId.asString()}/${message.channelId.asString()}/${message.id.asString()}>")
+        event.createFollowup("<https://discord.com/channels/${guildId.asString()}/${message.channelId.asString()}/${message.id.asString()}>")
             .withEphemeral(true)
             .awaitSingleOrNull()
     }
