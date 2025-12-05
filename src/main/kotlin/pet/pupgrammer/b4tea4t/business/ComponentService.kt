@@ -28,4 +28,15 @@ class ComponentService {
 
         return arrayOf(ActionRow.of(messageContentInput), ActionRow.of(embedDescriptionInput))
     }
+
+    fun getEchoModalComponents(): Array<LayoutComponent> {
+        val messageContentInput = TextInput.paragraph(
+            "echo.message-content",
+            "Message Content",
+            0,
+            2000,
+        ).required(true)
+
+        return arrayOf(ActionRow.of(messageContentInput))
+    }
 }

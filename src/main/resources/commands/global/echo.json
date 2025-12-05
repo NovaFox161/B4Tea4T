@@ -1,0 +1,6 @@
+{
+  "name": "echo",
+  "description": "Send a message via the bot",
+  "dm_permission": false,
+  "default_member_permissions": "32"
+}
