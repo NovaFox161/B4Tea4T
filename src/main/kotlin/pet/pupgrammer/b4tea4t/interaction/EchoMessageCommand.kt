@@ -12,6 +12,8 @@ class EchoMessageCommand(
     override val ids = arrayOf("Echo (Reply)")
     override val ephemeral = true
 
+    override suspend fun shouldDefer(event: MessageInteractionEvent) = false
+
     override suspend fun handle(event: MessageInteractionEvent) {
         val channelId = event.interaction.channelId
         val messageId = event.targetId
