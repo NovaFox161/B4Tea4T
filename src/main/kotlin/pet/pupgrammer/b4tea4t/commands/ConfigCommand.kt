@@ -32,6 +32,7 @@ class ConfigCommand(
 
     override suspend fun handle(event: ChatInputInteractionEvent) {
         when (event.options[0].name) {
+            "nick" -> nickname(event)
             "welcome-message" -> {
                 when (event.options[0].options[0].name) {
                     "create" -> createWelcomeMessage(event)
@@ -44,6 +45,22 @@ class ConfigCommand(
             }
             else -> throw IllegalArgumentException("Unknown subcommand")
         }
+    }
+
+    private suspend fun nickname(event: ChatInputInteractionEvent) {
+        val newName = event.options[0].getOption("name")
+            .flatMap(ApplicationCommandInteractionOption::getValue)
+            .map(ApplicationCommandInteractionOptionValue::asString)
+            .get()
+
+        event.client.getSelfMember(event.interaction.guildId.get()).flatMap {
+            it.edit().withNicknameOrNull(newName)
+        }.awaitSingleOrNull()
+
+        event.createFollowup("Success")
+            .withEphemeral(ephemeral)
+            .awaitSingleOrNull()
+
     }
 
     private suspend fun createWelcomeMessage(event: ChatInputInteractionEvent) {

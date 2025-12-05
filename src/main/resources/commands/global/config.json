@@ -5,6 +5,21 @@
   "default_member_permissions": "32",
   "options": [
     {
+      "name": "nick",
+      "description": "Sets the bots nickname",
+      "type": 1,
+      "options": [
+        {
+          "name": "name",
+          "description": "The nickname to display",
+          "type": 3,
+          "required": true,
+          "min_length": 1,
+          "max_length": 32
+        }
+      ]
+    },
+    {
       "name": "welcome-message",
       "description": "A set of commands for managing the welcome message",
       "type": 2,
