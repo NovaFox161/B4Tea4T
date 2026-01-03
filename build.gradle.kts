@@ -189,6 +189,12 @@ tasks {
         }
     }
 
+    withType<AbstractTestTask> {
+        configureEach {
+            failOnNoDiscoveredTests = false
+        }
+    }
+
     withType<Test> {
         useJUnitPlatform()
     }
