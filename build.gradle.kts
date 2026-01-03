@@ -1,4 +1,5 @@
 import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.tasks.wrapper.Wrapper.DistributionType.ALL
@@ -7,34 +8,35 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // Kotlin
-    kotlin("jvm") version "2.0.20"
+    kotlin("jvm") version "2.3.0"
 
     // Spring
-    kotlin("plugin.spring") version "2.0.20"
-    id("org.springframework.boot") version "3.3.3"
-    id("io.spring.dependency-management") version "1.1.6"
+    kotlin("plugin.spring") version "2.3.0"
+    id("org.springframework.boot") version "4.0.1"
+    id("io.spring.dependency-management") version "1.1.7"
 
     // Tooling
-    id("com.gorylenko.gradle-git-properties") version "2.4.2"
-    id("com.google.cloud.tools.jib") version "3.4.3"
+    id("com.gorylenko.gradle-git-properties") version "2.5.4"
+    id("com.google.cloud.tools.jib") version "3.5.2"
 }
 
 buildscript {
     dependencies {
-        classpath("com.squareup:kotlinpoet:1.18.1")
+        classpath("com.squareup:kotlinpoet:2.2.0")
     }
 }
 
 val botVersion = "0.0.1"
-val gradleWrapperVersion = "8.10"
+val gradleWrapperVersion = "9.2.1"
 val javaVersion = "21"
-val d4jVersion = "3.2.6"
+val d4jVersion = "3.3.0"
 val d4jStoresVersion = "3.2.2"
 val logbackContribVersion = "0.1.5"
 val discordWebhooksVersion = "0.8.4"
-val springMockkVersion = "4.0.2"
-val orgJsonVersion = "20240303"
-val commonsIOVersion = "2.15.1"
+val springMockkVersion = "5.0.1"
+val orgJsonVersion = "20251224"
+val commonsIOVersion = "2.21.0"
+val okioVersion = "3.16.2"
 
 group = "pet.pupgrammer"
 version = botVersion
@@ -44,7 +46,7 @@ val buildVersion = if (System.getenv("GITHUB_RUN_NUMBER") != null) {
 } else {
     "$version.d${System.currentTimeMillis().div(1000)}" //Seconds since epoch
 }
-val kotlinSrcDir = layout.buildDirectory.dir("src/main/kotlin").map(Directory::getAsFile).get()
+val kotlinSrcDir: File = layout.buildDirectory.dir("src/main/kotlin").map(Directory::getAsFile).get()
 
 java {
     sourceCompatibility = JavaVersion.toVersion(javaVersion)
@@ -98,6 +100,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("commons-io:commons-io:$commonsIOVersion")
+    implementation("com.squareup.okio:okio:$okioVersion")
 
 
     // Discord
@@ -106,6 +109,8 @@ dependencies {
     implementation("club.minnced:discord-webhooks:$discordWebhooksVersion") {
         // Due to vulnerability in older versions: https://github.com/advisories/GHSA-rm7j-f5g5-27vv
         exclude(group = "org.json", module = "json")
+        // Due to vulnerability in older versions: https://www.mend.io/vulnerability-database/CVE-2023-3635
+        exclude(group = "com.squareup.okio", module = "okio")
     }
 
     // Test
@@ -148,7 +153,7 @@ tasks {
 
             val enumBuilder = TypeSpec.enumBuilder("GitProperty")
                 .primaryConstructor(
-                    com.squareup.kotlinpoet.FunSpec.constructorBuilder()
+                    FunSpec.constructorBuilder()
                         .addParameter("value", String::class)
                         .build()
                 )
