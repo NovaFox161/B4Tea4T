@@ -7,11 +7,7 @@ import club.minnced.discord.webhook.send.WebhookEmbed
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder
 import org.slf4j.event.Level
 import pet.pupgrammer.`4tea4t`.GitProperty
-import pet.pupgrammer.b4tea4t.config.Config.APP_NAME
-import pet.pupgrammer.b4tea4t.config.Config.LOGGING_WEBHOOKS_ALL_ERRORS
-import pet.pupgrammer.b4tea4t.config.Config.LOGGING_WEBHOOKS_USE
-import pet.pupgrammer.b4tea4t.config.Config.SECRET_WEBHOOK_DEBUG
-import pet.pupgrammer.b4tea4t.config.Config.SECRET_WEBHOOK_STATUS
+import pet.pupgrammer.b4tea4t.config.Config.*
 import pet.pupgrammer.b4tea4t.extensions.embedDescriptionSafe
 import pet.pupgrammer.b4tea4t.extensions.embedFieldSafe
 import pet.pupgrammer.b4tea4t.utils.GlobalValues
@@ -48,14 +44,18 @@ class DiscordWebhookAppender : AppenderBase<ILoggingEvent>() {
                 return
             }
 
-            eventObject.markerList.contains(STATUS) -> {
-                executeStatus(eventObject)
-                return
-            }
+            !eventObject.markerList.isNullOrEmpty() -> {
+                when {
+                    eventObject.markerList.contains(STATUS) -> {
+                        executeStatus(eventObject)
+                        return
+                    }
 
-            eventObject.markerList.contains(DEFAULT) -> {
-                executeDefault(eventObject)
-                return
+                    eventObject.markerList.contains(DEFAULT) -> {
+                        executeDefault(eventObject)
+                        return
+                    }
+                }
             }
         }
     }
