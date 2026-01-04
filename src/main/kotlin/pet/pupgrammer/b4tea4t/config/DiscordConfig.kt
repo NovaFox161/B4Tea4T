@@ -78,6 +78,7 @@ class DiscordConfig {
         val useRedis = Config.CACHE_USE_REDIS.getBoolean()
         val redisHost = Config.REDIS_HOST.getString()
         val redisPort = Config.REDIS_PORT.getInt()
+        val useSSL = Config.REDIS_SSL.getBoolean()
         val redisDatabase = Config.REDIS_DATABASE.getInt()
         val redisUser = Config.REDIS_USERNAME.getString()
         val redisPassword = Config.REDIS_PASSWORD.getString().toCharArray()
@@ -86,6 +87,7 @@ class DiscordConfig {
         return if (useRedis) {
             val uriBuilder = RedisURI.Builder
                 .redis(redisHost, redisPort)
+                .withSsl(useSSL)
             if (redisDatabase > -1) uriBuilder.withDatabase(redisDatabase)
             if (redisUser.isNotEmpty() && redisPassword.isNotEmpty()) uriBuilder.withAuthentication(redisUser, redisPassword)
             else if (redisPassword.isNotEmpty()) uriBuilder.withPassword(redisPassword)

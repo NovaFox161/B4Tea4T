@@ -8,6 +8,7 @@ enum class Config(private val key: String, private var value: Any? = null) {
     APP_NAME("spring.application.name"),
 
     // Redis cache settings
+    REDIS_SSL("spring.data.redis.ssl.enabled", true),
     REDIS_HOST("spring.data.redis.host"),
     REDIS_PORT("spring.data.redis.port"),
     REDIS_DATABASE("spring.data.redis.database", -1),
