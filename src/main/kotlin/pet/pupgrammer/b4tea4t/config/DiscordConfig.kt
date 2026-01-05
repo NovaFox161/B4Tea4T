@@ -112,7 +112,7 @@ class DiscordConfig {
                 )
 
                 RedisClusterStoreService.Builder()
-                    .redisClient(RedisClusterClient.create(uriBuilder.build()))
+                    .redisClient(client)
                     .build()
             } else {
                 val client = RedisClient.create(uriBuilder.build())
@@ -121,7 +121,7 @@ class DiscordConfig {
                     .build()
 
                 RedisStoreService.Builder()
-                    .redisClient(RedisClient.create(uriBuilder.build()))
+                    .redisClient(client)
                     .build()
             }
 
