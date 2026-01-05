@@ -21,8 +21,11 @@ import discord4j.store.api.service.StoreService
 import discord4j.store.jdk.JdkStoreService
 import discord4j.store.redis.RedisClusterStoreService
 import discord4j.store.redis.RedisStoreService
+import io.lettuce.core.ClientOptions
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
+import io.lettuce.core.SslOptions
+import io.lettuce.core.cluster.ClusterClientOptions
 import io.lettuce.core.cluster.RedisClusterClient
 import kotlinx.coroutines.reactor.mono
 import org.springframework.context.annotation.Bean
@@ -31,6 +34,7 @@ import org.springframework.context.annotation.Primary
 import pet.pupgrammer.b4tea4t.listeners.EventListener
 import pet.pupgrammer.b4tea4t.mapper.SnowflakeMapper
 import reactor.kotlin.core.publisher.toFlux
+import java.io.File
 
 @Configuration
 class DiscordConfig {
@@ -79,6 +83,8 @@ class DiscordConfig {
         val redisHost = Config.REDIS_HOST.getString()
         val redisPort = Config.REDIS_PORT.getInt()
         val useSSL = Config.REDIS_SSL.getBoolean()
+        val trustStoreFile = Config.REDIS_SSL_TRUSTSTORE_FILE.getString()
+        val trustStorePassword = Config.REDIS_SSL_TRUSTSTORE_PASSWORD.getString()
         val redisDatabase = Config.REDIS_DATABASE.getInt()
         val redisUser = Config.REDIS_USERNAME.getString()
         val redisPassword = Config.REDIS_PASSWORD.getString().toCharArray()
@@ -92,11 +98,28 @@ class DiscordConfig {
             if (redisUser.isNotEmpty() && redisPassword.isNotEmpty()) uriBuilder.withAuthentication(redisUser, redisPassword)
             else if (redisPassword.isNotEmpty()) uriBuilder.withPassword(redisPassword)
 
+
+            val sslOptions = SslOptions.builder()
+                .jdkSslProvider()
+                .truststore(File(trustStoreFile), trustStorePassword)
+                .build()
+
             val rss = if (isRedisCluster) {
+                val client = RedisClusterClient.create(uriBuilder.build())
+                client.setOptions(ClusterClientOptions.builder()
+                    .sslOptions(sslOptions)
+                    .build()
+                )
+
                 RedisClusterStoreService.Builder()
                     .redisClient(RedisClusterClient.create(uriBuilder.build()))
                     .build()
             } else {
+                val client = RedisClient.create(uriBuilder.build())
+                client.options = ClientOptions.builder()
+                    .sslOptions(sslOptions)
+                    .build()
+
                 RedisStoreService.Builder()
                     .redisClient(RedisClient.create(uriBuilder.build()))
                     .build()
