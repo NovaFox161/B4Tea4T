@@ -1,6 +1,7 @@
 package pet.pupgrammer.b4tea4t.config
 
 import java.io.FileReader
+import java.time.Instant
 import java.util.*
 
 enum class Config(private val key: String, private var value: Any? = null) {
@@ -19,10 +20,21 @@ enum class Config(private val key: String, private var value: Any? = null) {
     CACHE_REDIS_IS_CLUSTER("redis.cluster", false),
     CACHE_USE_REDIS("bot.cache.redis", false),
     CACHE_PREFIX("bot.cache.prefix", "b4tea4t"),
-    //CACHE_TTL_SETTINGS_MINUTES("bot.cache.ttl-minutes.settings", 60),
     CACHE_TTL_WELCOME_MESSAGE("bot.cache.ttl-minutes.welcome-message", 120),
+    CACHE_TTL_MESSAGE_RECORD_MINUTES("bot.cache.ttl-minutes.message-record", 60),
+    CACHE_TTL_USER_LEVEL_MINUTES("bot.cache.ttl-minutes.user-level", 60),
+    CACHE_TTL_DAYS_ACTIVE_MINUTES("bot.cache.ttl-minutes.days-active", 60),
+    CACHE_TTL_LEVELED_USER_MINUTES("bot.cache.ttl-minutes.leveled-user", 60),
 
     // Global bot timings
+
+    // Leveling
+    LEVELING_EPOCH("bot.leveling.epoch"),
+    LEVELING_LEADERBOARD_PAGE_SIZE("bot.leveling.leaderboard.page-size", 10),
+
+    LEVELING_IGNORED_CHANNELS("bot.leveling.ignored-channels", ""),
+    LEVELING_TRACKED_ROLES("bot.leveling.tracked-roles", ""),
+    LEVELING_IDEAL_WORD_COUNT("bot.leveling.ideal-word-count", 32),
 
     // Bot secrets
     SECRET_BOT_TOKEN("bot.secret.token"),
@@ -63,4 +75,6 @@ enum class Config(private val key: String, private var value: Any? = null) {
     fun getLong() = getString().toLong()
 
     fun getBoolean() = getString().toBoolean()
+
+    fun getInstant(): Instant = Instant.parse(getString())
 }

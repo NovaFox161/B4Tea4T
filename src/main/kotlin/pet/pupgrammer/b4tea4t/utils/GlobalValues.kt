@@ -7,6 +7,7 @@ import org.slf4j.MarkerFactory
 object GlobalValues {
     var iconUrl: String? = null
     val embedColor = Color.of(252, 113, 20)
+    val levelEmbedColor: Color = Color.of(126, 211, 33)
     val errorColor: Color  = Color.of(248, 38, 48)
     val warnColor: Color = Color.of(232, 150, 0)
 
